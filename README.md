@@ -1,0 +1,4 @@
+simplecalc
+==========
+
+A simple calculator
