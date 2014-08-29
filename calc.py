@@ -1,5 +1,18 @@
 import sys
 
+# Define exceptions
+class InvalidExpression(Exception):
+    pass
+
+class NotStringError(Exception):
+    pass
+
+class NotListError(Exception):
+    pass
+
+class NotQueueError(Exception):
+    pass
+
 def tokenize(expr):
     """
     expr: a string representing a mathematical expression in infix notation
