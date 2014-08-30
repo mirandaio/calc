@@ -1,5 +1,3 @@
-import sys
-
 # Define exceptions
 class InvalidExpression(Exception):
     pass
