@@ -12,6 +12,7 @@ class TokenizeValidInput(unittest.TestCase):
         ("-1", ["_", "1"]), # unary negation is represented as _
         ("log 14", ["log", "14"]),
         ("log(3)", ["log", "(", "3", ")"]),
+        ("log(-1)", ["log", "(", "_", "1", ")"]),
         ("(2)", ["(", "2", ")"]),
         ("1 + 2", ["1", "+", "2"]),
         ("1/0", ["1", "/", "0"]),
@@ -30,12 +31,14 @@ class TokenizeValidInput(unittest.TestCase):
 
 class TokenizeBadInput(unittest.TestCase):
     invalid_expr = (
-        "1 1",         # consecutive numbers without operator in middle
+        "1 1",         # consecutive numbers without operator in the middle
+        "1.2.3",       # consecutive numbers without operator in the middle
+        "1.2 + 3.2.4", # consecutive numbers without operator in middle
+        "1.2.",
         "+",           # binary operator missing both operands
         "3 * ",        # binary operator missing right operand
         " + 2",        # binary operator missing left operand
         "1 + log",     # unary operator missing operand
-        "1 / 0",       # divide by zero
         "1 & 2",       # invalid operator
         "(",           # unbalanced parentheses
         ")",           # unbalanced parentheses
