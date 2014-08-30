@@ -41,11 +41,11 @@ class TokenizeBadInput(unittest.TestCase):
         ")",           # unbalanced parentheses
         "())",         # unbalanced parentheses
         "(1 + 2 * 3",  # unbalanced parentheses
-        "1 + 2) * 3") # unbalanced parentheses
+        "1 + 2) * 3")  # unbalanced parentheses
 
     def test_invalid_expr(self):
         for expr in self.invalid_expr:
-            self.assertRaises(calc.InvalidExpression, calc.tokenize, expr)
+            self.assertRaises(calc.InvalidExpressionError, calc.tokenize, expr)
 
 if __name__ == "__main__":
     unittest.main()
