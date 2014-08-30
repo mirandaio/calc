@@ -19,13 +19,26 @@ def tokenize(expr):
     mathematical expression
     """
     tokens = []
+    parens = 0
     i = 0
 
     while i < len(expr):
         c = expr[i]
-        if c == "(" or c == ")" or c == "+" or c == "*" or c == "/":
+        if c == "(" or c == ")":
+            if c == "(":
+                parens += 1
+            else:
+                parens -= 1
+                if parens < 0:
+                    raise InvalidExpressionError, "Mismatched parentheses"
             tokens.append(c)
             i += 1
+        elif c == "+" or c == "*" or c == "/":
+            if len(tokens) > 0 and (tokens[-1] == ")" or isnumber(tokens[-1])):
+                tokens.append(c)
+                i += 1
+            else:
+                raise InvalidExpressionError, "missing left operand"
         elif c == "l": # what about number right before log?
             if i <= len(expr) - 3 and expr[i:i+3] == "log":
                 tokens.append(expr[i:i+3])
@@ -43,13 +56,12 @@ def tokenize(expr):
                     prev == "log":
                     tokens.append("_")
                     i += 1
-                elif prev == ")" or prev[-1] == "." or prev[-1].isdigit():
+                elif prev == ")" or isnumber(prev):
                     tokens.append("-")
                     i += 1
                 else: # don't think will need this
                     raise InvalidExpressionError, "invalid -"
         elif expr[i].isspace():
-            # skip white space
             while i < len(expr) and expr[i].isspace():
                 i += 1
         elif c == "." or c.isdigit():
@@ -61,6 +73,7 @@ def tokenize(expr):
                     num += expr[i]
                     i += 1
                 elif not haspoint and expr[i] == ".":
+                    haspoint = True
                     num += "."
                     i += 1
                 else:
@@ -69,11 +82,34 @@ def tokenize(expr):
             if num == ".":
                 raise InvalidExpressionError, "single dot"
 
+            if len(tokens) > 0 and (tokens[-1] == ")" or isnumber(tokens[-1])):
+                raise InvalidExpressionError, "missing operator"
+
             tokens.append(num)
         else:
             raise InvalidExpressionError, "Unrecognized character"
 
+    if parens != 0:
+        raise InvalidExpressionError, "Unbalanced parentheses"
+
+    if len(tokens) > 0 and isoperator(tokens[-1]):
+        raise InvalidExpressionError, "Ended in " + tokens[-1]
+
     return tokens
+
+def isnumber(s):
+    """
+    helper function to determine if string represents a number"
+    """
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
+
+def isoperator(s):
+    return s == "+" or s == "-" or s == "*" or s == "/" or s == "log" or \
+        s == "_"
 
 def topostfix(tokens):
     """
