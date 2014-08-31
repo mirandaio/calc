@@ -1,5 +1,6 @@
 import unittest
 import calc
+from collections import deque
 
 class TokenizeValidInput(unittest.TestCase):
     valid_expr = (
@@ -10,9 +11,11 @@ class TokenizeValidInput(unittest.TestCase):
         ("1", ["1"]),
         ("5.84", ["5.84"]),
         ("-1", ["_", "1"]), # unary negation is represented as _
+        ("--2", ["_", "_", "2"]),
         ("log 14", ["log", "14"]),
         ("log(3)", ["log", "(", "3", ")"]),
         ("log(-1)", ["log", "(", "_", "1", ")"]),
+        ("log -4", ["log", "_", "4"]),
         ("(2)", ["(", "2", ")"]),
         ("1 + 2", ["1", "+", "2"]),
         ("1/0", ["1", "/", "0"]),
@@ -34,7 +37,7 @@ class TokenizeBadInput(unittest.TestCase):
         "1 1",         # consecutive numbers without operator in the middle
         "1.2.3",       # consecutive numbers without operator in the middle
         "1.2 + 3.2.4", # consecutive numbers without operator in middle
-        "1.2.",
+        "1.2.",        # extra dot
         "+",           # binary operator missing both operands
         "3 * ",        # binary operator missing right operand
         " + 2",        # binary operator missing left operand
@@ -49,6 +52,25 @@ class TokenizeBadInput(unittest.TestCase):
     def test_invalid_expr(self):
         for expr in self.invalid_expr:
             self.assertRaises(calc.InvalidExpressionError, calc.tokenize, expr)
+
+class ToPostFix(unittest.TestCase):
+    exprmap = (
+        (["1"], deque(["1"])),
+        (["_", "1"], deque(["1", "_"])),
+        (["_", "_", "2"], deque(["2", "_", "_"])),
+        (["log", "2"], deque(["2", "log"])),
+        (["log", "_", "3"], deque(["3", "_", "log"])),
+        (["log", "(", "_", "5", ")"], deque(["5", "_", "log"])),
+        (["log", "(", "1", "+", "2", ")"], deque(["1", "2", "+", "log"])),
+        (["1", "/", "2"], deque(["1", "2", "/"])),
+        (["2", "*", "3", "-", "1"], deque(["2", "3", "*", "1", "-"])),
+        (["1", "+", "2", "*", "3"], deque(["1", "2", "3", "*", "+"])),
+        (["2", "*", "3", "/", "4"], deque(["2", "3", "*", "4", "/"])))
+
+    def test_postfix(self):
+        for infix, postfix in self.exprmap:
+            result = calc.topostfix(infix)
+            self.assertEqual(postfix, result)
 
 if __name__ == "__main__":
     unittest.main()

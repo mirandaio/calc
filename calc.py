@@ -1,3 +1,5 @@
+from collections import deque
+
 # Define exceptions
 class InvalidExpressionError(Exception):
     pass
@@ -113,8 +115,8 @@ def isoperator(s):
 
 def topostfix(tokens):
     """
-    tokens: a list of strings which represent the tokens of a mathematical 
-    expression in infix notation
+    tokens: a list of strings which represent the tokens of a valid 
+    mathematical expression in infix notation
 
     returns: a queue of strings that represent the tokens of a mathematical 
     expression in postfix notation
