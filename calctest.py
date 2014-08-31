@@ -100,7 +100,11 @@ class Calc(unittest.TestCase):
     ("7 / 2", 3.5),
     ("log1 + 3", 3),
     ("5*log1", 0),
-    ("-log1", 0))
+    ("-log1", 0),
+    ("2 + 4 - 1 * 7", -1),
+    ("3.5 * 4 / 2", 7),
+    ("(1+2)/6", 0.5),
+    ("15/(-4 + 7)", 5))
 
     def test_calc(self):
         for expr, val in self.exprtoval:
