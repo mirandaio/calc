@@ -82,11 +82,29 @@ class Eval(unittest.TestCase):
     (deque(["2", "_"]), -2),
     (deque(["3", "2", "*"]), 6),
     (deque(["4", ".5", "*"]), 2),
-    (deque(["1", "0.5", "/"]), 2))
+    (deque(["1", "0.5", "/"]), 2),
+    (deque(["2", "1", "log", "+"]), 2))
 
     def test_eval(self):
         for postfix, val in self.exprtoval:
             result = calc.eval(postfix)
+            self.assertEqual(val, result)
+
+class Calc(unittest.TestCase):
+    exprtoval = (
+    ("2", 2),
+    ("-7", -7),
+    ("log1", 0),
+    ("1 + 2", 3),
+    ("4.3 * 3.2", 13.76),
+    ("7 / 2", 3.5),
+    ("log1 + 3", 3),
+    ("5*log1", 0),
+    ("-log1", 0))
+
+    def test_calc(self):
+        for expr, val in self.exprtoval:
+            result = calc.calc(expr)
             self.assertEqual(val, result)
 
 if __name__ == "__main__":
