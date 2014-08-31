@@ -1,3 +1,4 @@
+import math
 from collections import deque
 
 # Define exceptions
@@ -162,4 +163,36 @@ def eval(tokens):
     returns: a floating number that is the result of evaluating the
     mathematical expression
     """
-    pass
+    stack = []
+    for token in tokens:
+        if isnumber(token):
+            stack.append(float(token))
+        elif token == "_":
+            val = -stack.pop()
+            stack.append(val)
+        elif token == "log":
+            val = math.log(stack.pop())
+            stack.append(val)
+        elif token == "+":
+            right = stack.pop()
+            left = stack.pop()
+            stack.append(left + right)
+        elif token == "-":
+            right = stack.pop()
+            left = stack.pop()
+            stack.append(left - right)
+        elif token == "*":
+            right = stack.pop()
+            left = stack.pop()
+            stack.append(left * right)
+        else:
+            right = stack.pop()
+            left = stack.pop()
+            stack.append(left / right)
+
+    return stack[-1]
+
+def calc(s):
+    tokens = tokenize(s)
+    postfix = topostfix(tokens)
+    return eval(postfix)
