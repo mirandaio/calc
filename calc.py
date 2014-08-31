@@ -13,6 +13,9 @@ class NotListError(Exception):
 class NotQueueError(Exception):
     pass
 
+# a map of operators to their precedence
+p = {"+": 1, "-": 1, "*": 2, "/": 2, "_": 3, "log": 3}
+
 def tokenize(expr):
     """
     expr: a string representing a mathematical expression in infix notation
@@ -110,8 +113,13 @@ def isnumber(s):
         return False
 
 def isoperator(s):
-    return s == "+" or s == "-" or s == "*" or s == "/" or s == "log" or \
-        s == "_"
+    return isunary(s) or isbinary(s)
+
+def isunary(s):
+    return s == "_" or s == "log"
+
+def isbinary(s):
+    return s == "+" or s == "-" or s == "*" or s == "/"
 
 def topostfix(tokens):
     """
@@ -121,12 +129,35 @@ def topostfix(tokens):
     returns: a queue of strings that represent the tokens of a mathematical 
     expression in postfix notation
     """
-    pass
+    stack = []
+    queue = deque([])
 
-def eval(token):
+    for token in tokens:
+        if isnumber(token):
+            queue.append(token)
+        elif token == "(" or isunary(token):
+            stack.append(token)
+        elif isbinary(token):
+            while len(stack) > 0 and stack[-1] != "(" and \
+                p[token] <= p[stack[-1]]:
+                queue.append(stack.pop())
+
+            stack.append(token)
+        elif token == ")":
+            while stack[-1] != "(":
+                queue.append(stack.pop())
+
+            stack.pop()
+
+    while len(stack) > 0:
+        queue.append(stack.pop())
+
+    return queue
+
+def eval(tokens):
     """
-    tokens: a queue of strings that represent the tokens of a mathematical
-    expression in postfix notation
+    tokens: a queue of strings that represent the tokens of a valid 
+    mathematical expression in postfix notation
 
     returns: a floating number that is the result of evaluating the
     mathematical expression
