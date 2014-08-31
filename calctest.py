@@ -62,15 +62,32 @@ class ToPostFix(unittest.TestCase):
         (["log", "_", "3"], deque(["3", "_", "log"])),
         (["log", "(", "_", "5", ")"], deque(["5", "_", "log"])),
         (["log", "(", "1", "+", "2", ")"], deque(["1", "2", "+", "log"])),
+        (["log", "_", "1", "+", "2"], deque(["1", "_", "log", "2", "+"])),
         (["1", "/", "2"], deque(["1", "2", "/"])),
         (["2", "*", "3", "-", "1"], deque(["2", "3", "*", "1", "-"])),
         (["1", "+", "2", "*", "3"], deque(["1", "2", "3", "*", "+"])),
-        (["2", "*", "3", "/", "4"], deque(["2", "3", "*", "4", "/"])))
+        (["2", "*", "3", "/", "4"], deque(["2", "3", "*", "4", "/"])),
+        (["(", "2", "*", "3", ")"], deque(["2", "3", "*"])),
+        (["log", "(", "2", "*", "3", "+", "7", ")"], deque(["2", "3", "*", "7",
+        "+", "log"])))
 
     def test_postfix(self):
         for infix, postfix in self.exprmap:
             result = calc.topostfix(infix)
             self.assertEqual(postfix, result)
+
+class Eval(unittest.TestCase):
+    exprtoval = (
+    (deque(["1"]), 1),
+    (deque(["2", "_"]), -2),
+    (deque(["3", "2", "*"]), 6),
+    (deque(["4", ".5", "*"]), 2),
+    (deque(["1", "0.5", "/"]), 2))
+
+    def test_eval(self):
+        for postfix, val in self.exprtoval:
+            result = calc.eval(postfix)
+            self.assertEqual(val, result)
 
 if __name__ == "__main__":
     unittest.main()
