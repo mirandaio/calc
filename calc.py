@@ -91,26 +91,28 @@ def tokenize(expr):
                 i += 1
         elif c == "." or c.isdigit():
             haspoint = c == "."
-            num = c
+            num = [c]
             i += 1
             while i < len(expr):
                 if expr[i].isdigit():
-                    num += expr[i]
+                    num.append(expr[i])
                     i += 1
                 elif not haspoint and expr[i] == ".":
                     haspoint = True
-                    num += "."
+                    num.append(".")
                     i += 1
                 else:
                     break
 
-            if num == ".":
+            strnum = ''.join(num)
+
+            if strnum == ".":
                 raise InvalidExpressionError, "single dot"
 
             if len(tokens) > 0 and (tokens[-1] == ")" or isnumber(tokens[-1])):
                 raise InvalidExpressionError, "missing operator"
 
-            tokens.append(num)
+            tokens.append(strnum)
         else:
             raise InvalidExpressionError, "Unrecognized character"
 
