@@ -1,32 +1,18 @@
-import os
 import webapp2
-import jinja2
 import calc
 
 from google.appengine.ext import db
 
-template_dir = os.path.join(os.path.dirname(__file__), 'templates')
-jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir),
-                               autoescape = True)
+with open('templates/index.html', 'r') as template:
+    home = template.read()
 
 class Session(db.Model):
     name = db.StringProperty(required = True)
     content = db.TextProperty(required = True)
 
-class Handler(webapp2.RequestHandler):
-    def write(self, *a, **kw):
-        self.response.out.write(*a, **kw)
-
-    def render_str(self, template, **params):
-        t = jinja_env.get_template(template)
-        return t.render(params)
-
-    def render(self, template, **kw):
-        self.write(self.render_str(template, **kw))
-
-class MainPage(Handler):
+class MainPage(webapp2.RequestHandler):
     def get(self):
-        self.render('index.html')
+        self.response.write(home)
 
     def post(self):
         expr = str(self.request.get('expr'))
@@ -37,7 +23,7 @@ class MainPage(Handler):
             saved_sessions = db.GqlQuery('SELECT * FROM Session WHERE ' +
                 'name = :1', tokens[1])
 
-            if saved_sessions.count() > 0:
+            if saved_sessions.count() == 1:
                 for s in saved_sessions:
                     s.content = session
                     s.put()
@@ -50,14 +36,12 @@ class MainPage(Handler):
             saved_sessions = db.GqlQuery('SELECT * FROM Session WHERE ' +
                 'name = :1', tokens[1])
 
-            print 'count:', saved_sessions.count()
-
             if saved_sessions.count() == 0:
                 self.response.write('sesion no encontrada')
             else:
                 self.response.write(saved_sessions[0].content)
         else: 
-            result = str(calc.calc(expr))
+            result = calc.calc(expr)
             self.response.write(result)
 
 application = webapp2.WSGIApplication([
