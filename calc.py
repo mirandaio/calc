@@ -17,6 +17,25 @@ class NotQueueError(Exception):
 # a map of operators to their precedence
 p = {"+": 1, "-": 1, "*": 2, "/": 2, "_": 3, "log": 3}
 
+def isnumber(s):
+    """
+    helper function to determine if string represents a number"
+    """
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
+
+def isoperator(s):
+    return isunary(s) or isbinary(s)
+
+def isunary(s):
+    return s == "_" or s == "log"
+
+def isbinary(s):
+    return s == "+" or s == "-" or s == "*" or s == "/"
+
 def tokenize(expr):
     """
     expr: a string representing a mathematical expression in infix notation
@@ -103,24 +122,6 @@ def tokenize(expr):
 
     return tokens
 
-def isnumber(s):
-    """
-    helper function to determine if string represents a number"
-    """
-    try:
-        float(s)
-        return True
-    except ValueError:
-        return False
-
-def isoperator(s):
-    return isunary(s) or isbinary(s)
-
-def isunary(s):
-    return s == "_" or s == "log"
-
-def isbinary(s):
-    return s == "+" or s == "-" or s == "*" or s == "/"
 
 def topostfix(tokens):
     """
