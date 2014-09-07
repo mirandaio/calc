@@ -1,4 +1,4 @@
-simplecalc
-==========
+calc
+====
 
 A simple calculator

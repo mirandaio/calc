@@ -9,6 +9,10 @@ template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir),
                                autoescape = True)
 
+class Session(db.Model):
+    sessionname = db.StringProperty(required = True)
+    sessioncontent = db.TextProperty(required = True)
+
 class Handler(webapp2.RequestHandler):
     def write(self, *a, **kw):
         self.response.out.write(*a, **kw)
@@ -26,7 +30,7 @@ class MainPage(Handler):
 
     def post(self):
         expr = str(self.request.get('expr'))
-        session = str(self.request.get('session')
+        session = str(self.request.get('session'))
         result = str(calc.calc(expr))
         self.response.write(result)
 
