@@ -10,8 +10,8 @@ jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir),
                                autoescape = True)
 
 class Session(db.Model):
-    sessionname = db.StringProperty(required = True)
-    sessioncontent = db.TextProperty(required = True)
+    name = db.StringProperty(required = True)
+    content = db.TextProperty(required = True)
 
 class Handler(webapp2.RequestHandler):
     def write(self, *a, **kw):
@@ -31,8 +31,34 @@ class MainPage(Handler):
     def post(self):
         expr = str(self.request.get('expr'))
         session = str(self.request.get('session'))
-        result = str(calc.calc(expr))
-        self.response.write(result)
+        tokens = expr.split()
+
+        if len(tokens) == 2 and tokens[0] == 'guardar':
+            saved_sessions = db.GqlQuery('SELECT * FROM Session WHERE ' +
+                'name = :1', tokens[1])
+
+            if saved_sessions.count() > 0:
+                for s in saved_sessions:
+                    s.content = session
+                    s.put()
+            else:
+                s = Session(name=tokens[1], content=session)
+                s.put()
+
+            self.response.write('sesion almacenada')
+        elif len(tokens) == 2 and tokens[0] == 'recuperar':
+            saved_sessions = db.GqlQuery('SELECT * FROM Session WHERE ' +
+                'name = :1', tokens[1])
+
+            print 'count:', saved_sessions.count()
+
+            if saved_sessions.count() == 0:
+                self.response.write('sesion no encontrada')
+            else:
+                self.response.write(saved_sessions[0].content)
+        else: 
+            result = str(calc.calc(expr))
+            self.response.write(result)
 
 application = webapp2.WSGIApplication([
     ('/', MainPage),
