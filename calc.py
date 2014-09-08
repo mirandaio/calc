@@ -5,15 +5,6 @@ from collections import deque
 class InvalidExpressionError(Exception):
     pass
 
-class NotStringError(Exception):
-    pass
-
-class NotListError(Exception):
-    pass
-
-class NotQueueError(Exception):
-    pass
-
 # a map of operators to their precedence
 p = {"+": 1, "-": 1, "*": 2, "/": 2, "_": 3, "log": 3}
 
