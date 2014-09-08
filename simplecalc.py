@@ -40,9 +40,12 @@ class MainPage(webapp2.RequestHandler):
                 self.response.write('sesion no encontrada')
             else:
                 self.response.write(saved_sessions[0].content)
-        else: 
-            result = calc.calc(expr)
-            self.response.write(result)
+        else:
+            try:
+                result = calc.calc(expr)
+                self.response.write(result)
+            except Exception, e:
+                self.response.write(e)
 
 application = webapp2.WSGIApplication([
     ('/', MainPage),

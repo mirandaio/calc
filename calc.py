@@ -55,7 +55,7 @@ def tokenize(expr):
             else:
                 parens -= 1
                 if parens < 0:
-                    raise InvalidExpressionError, "Mismatched parentheses"
+                    raise InvalidExpressionError, "Unbalanced parentheses"
             tokens.append(c)
             i += 1
         elif c == "+" or c == "*" or c == "/":
