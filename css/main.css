@@ -1,0 +1,11 @@
+body, input {
+  font-family: monospace;
+}
+
+h1, h3 {
+  font-family: sans-serif;
+}
+
+h3, pre {
+  margin: 0;
+}
