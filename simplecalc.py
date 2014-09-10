@@ -3,7 +3,7 @@ import calc
 
 from google.appengine.ext import db
 
-with open('templates/index.html', 'r') as template:
+with open('views/index.html', 'r') as template:
     home = template.read()
 
 class Session(db.Model):
