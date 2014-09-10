@@ -1,7 +1,6 @@
-var sfront = [];
-var sback = [];
-
 $(document).ready(function() {
+  var sfront = [];
+  var sback = [];
   $('input').keydown(function(event) {
     if(event.which == 13) {
       var expr = $(this).val();
