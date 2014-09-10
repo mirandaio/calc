@@ -1,10 +1,6 @@
 import math
 from collections import deque
 
-# Define exceptions
-class InvalidExpressionError(Exception):
-    pass
-
 # a map of operators to their precedence
 p = {"+": 1, "-": 1, "*": 2, "/": 2, "_": 3, "log": 3}
 
@@ -46,7 +42,7 @@ def tokenize(expr):
             else:
                 parens -= 1
                 if parens < 0:
-                    raise InvalidExpressionError, "Unbalanced parentheses"
+                    raise Exception, "Unbalanced parentheses"
             tokens.append(c)
             i += 1
         elif c == "+" or c == "*" or c == "/":
@@ -54,13 +50,13 @@ def tokenize(expr):
                 tokens.append(c)
                 i += 1
             else:
-                raise InvalidExpressionError, "missing left operand"
+                raise Exception, "missing left operand"
         elif c == "l": # what about number right before log?
             if i <= len(expr) - 3 and expr[i:i+3] == "log":
                 tokens.append(expr[i:i+3])
                 i += 3
             else:
-                raise InvalidExpressionError, "expected log"
+                raise Exception, "expected log"
         elif c == "-":
             if len(tokens) == 0:
                 tokens.append("_")
@@ -76,7 +72,7 @@ def tokenize(expr):
                     tokens.append("-")
                     i += 1
                 else: # don't think will need this
-                    raise InvalidExpressionError, "invalid -"
+                    raise Exception, "invalid -"
         elif expr[i].isspace():
             while i < len(expr) and expr[i].isspace():
                 i += 1
@@ -98,20 +94,20 @@ def tokenize(expr):
             strnum = ''.join(num)
 
             if strnum == ".":
-                raise InvalidExpressionError, "single dot"
+                raise Exception, "single dot"
 
             if len(tokens) > 0 and (tokens[-1] == ")" or isnumber(tokens[-1])):
-                raise InvalidExpressionError, "missing operator"
+                raise Exception, "missing operator"
 
             tokens.append(strnum)
         else:
-            raise InvalidExpressionError, "Unrecognized character"
+            raise Exception, "Unrecognized character"
 
     if parens != 0:
-        raise InvalidExpressionError, "Unbalanced parentheses"
+        raise Exception, "Unbalanced parentheses"
 
     if len(tokens) > 0 and isoperator(tokens[-1]):
-        raise InvalidExpressionError, "Ended in " + tokens[-1]
+        raise Exception, "Ended in " + tokens[-1]
 
     return tokens
 
