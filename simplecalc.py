@@ -6,12 +6,17 @@ from google.appengine.ext import db
 with open('views/index.html', 'r') as template:
     home = template.read()
 
+with open('views/help.html', 'r') as h:
+    helpcontent = h.read()
+
 class Session(db.Model):
     name = db.StringProperty(required = True)
     content = db.TextProperty(required = True)
 
 class MainPage(webapp2.RequestHandler):
     def get(self):
+        with open('views/index.html', 'r') as front:
+            home = front.read()
         self.response.write(home)
 
     def post(self):
@@ -19,7 +24,9 @@ class MainPage(webapp2.RequestHandler):
         session = str(self.request.get('session'))
         tokens = expr.split()
 
-        if len(tokens) == 2 and tokens[0] == 'guardar':
+        if expr == 'h':
+            self.response.write(helpcontent)
+        elif len(tokens) == 2 and tokens[0] == 'save':
             saved_sessions = db.GqlQuery('SELECT * FROM Session WHERE ' +
                 'name = :1', tokens[1])
 
@@ -31,13 +38,13 @@ class MainPage(webapp2.RequestHandler):
                 s = Session(name=tokens[1], content=session)
                 s.put()
 
-            self.response.write('sesion almacenada')
-        elif len(tokens) == 2 and tokens[0] == 'recuperar':
+            self.response.write('session saved')
+        elif len(tokens) == 2 and tokens[0] == 'load':
             saved_sessions = db.GqlQuery('SELECT * FROM Session WHERE ' +
                 'name = :1', tokens[1])
 
             if saved_sessions.count() == 0:
-                self.response.write('sesion no encontrada')
+                self.response.write('session not found')
             else:
                 self.response.write(saved_sessions[0].content)
         else:
